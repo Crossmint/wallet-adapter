@@ -6,6 +6,7 @@ import { WalletDialogProvider as MaterialUIWalletDialogProvider } from '@solana/
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider as ReactUIWalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
+    CrossmintWalletAdapter,
     GlowWalletAdapter,
     PhantomWalletAdapter,
     SlopeWalletAdapter,
@@ -90,6 +91,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
                     },
                 },
             }),
+            new CrossmintWalletAdapter(),
         ],
         [network]
     );
