@@ -8,6 +8,7 @@ import {
     SlopeWalletAdapter,
     SolflareWalletAdapter,
     TorusWalletAdapter,
+    CrossmintWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import { AppProps } from 'next/app';
@@ -38,6 +39,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             new SlopeWalletAdapter(),
             new SolflareWalletAdapter({ network }),
             new TorusWalletAdapter(),
+            new CrossmintWalletAdapter(),
         ],
         [network]
     );
