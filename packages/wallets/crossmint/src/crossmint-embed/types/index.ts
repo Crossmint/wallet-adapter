@@ -45,3 +45,8 @@ export enum CrossmintEnvironment {
     PROD = 'https://www.crossmint.io',
     LOCAL = 'htpp://localhost:3001',
 }
+
+export interface CrossmintAccountStore {
+    publicKey: string;
+    chain: BlockchainTypes;
+}

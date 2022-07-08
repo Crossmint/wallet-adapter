@@ -93,8 +93,8 @@ export class CrossmintWindow extends WindowController {
     async login() {
         if (!this.controlledWindow) throw new Error('Cannot login when window is not open. TODO: open window auto');
 
-        return await new Promise<string[] | null>(async (resolve, reject) => {
-            let _accounts: string[] | null = null;
+        return await new Promise<string[] | undefined>(async (resolve, reject) => {
+            let _accounts: string[] | undefined = undefined;
 
             window.addEventListener('message', (e) => {
                 if (!ALLOWED_ORIGINS.includes(e.origin)) return;
@@ -138,11 +138,11 @@ export class CrossmintWindow extends WindowController {
         });
     }
 
-    async signMessage(message: Uint8Array): Promise<Uint8Array | null> {
+    async signMessage(message: Uint8Array): Promise<Uint8Array | undefined> {
         if (!this.controlledWindow) throw new Error('Cannot login when window is not open. TODO: open window auto');
 
-        return await new Promise<Uint8Array | null>(async (resolve, reject) => {
-            let _signedMessage: Uint8Array | null = null;
+        return await new Promise<Uint8Array | undefined>(async (resolve, reject) => {
+            let _signedMessage: Uint8Array | undefined = undefined;
 
             window.addEventListener('message', (e) => {
                 if (!ALLOWED_ORIGINS.includes(e.origin)) return;
