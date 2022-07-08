@@ -91,7 +91,10 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
                     },
                 },
             }),
-            new CrossmintWalletAdapter(),
+            new CrossmintWalletAdapter({
+                apiKey: 'maxwell-test-api-key',
+                environment: 'http://localhost:3001' as any,
+            }),
         ],
         [network]
     );

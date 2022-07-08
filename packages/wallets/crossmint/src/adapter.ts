@@ -10,28 +10,36 @@ import {
     WalletNotReadyError,
     WalletPublicKeyError,
     WalletReadyState,
+    WalletSignMessageError,
     WalletSignTransactionError,
+    WalletWindowClosedError,
 } from '@solana/wallet-adapter-base';
 import { PublicKey, Transaction } from '@solana/web3.js';
+import { CrossmintWalletName, CROSSMINT_LOGO_21x21 } from './crossmint-embed/consts/branding';
+import { CrossmintWalletAdapterParams, CrossmintWalletAdapterConfig } from './crossmint-embed/types';
+import { buildConfig } from './crossmint-embed/utils/config';
 
 import { CrossmintWindow } from './crossmint-embed/windowController/WindowController';
-
-export const CrossmintWalletName = 'Crossmint' as WalletName<'Crossmint'>;
 
 export class CrossmintWalletAdapter extends BaseMessageSignerWalletAdapter {
     name = CrossmintWalletName;
     url = 'https://crossmint.io';
-    icon = 'https://www.crossmint.io/assets/crossmint/logo-21@2x.png';
+    icon = CROSSMINT_LOGO_21x21;
 
     private _connecting: boolean;
     private _publicKey: PublicKey | null;
     private _readyState: WalletReadyState =
         typeof window === 'undefined' ? WalletReadyState.Unsupported : WalletReadyState.Loadable;
 
-    constructor() {
+    private _config: CrossmintWalletAdapterConfig;
+
+    constructor(params: CrossmintWalletAdapterParams) {
         super();
+
         this._connecting = false;
         this._publicKey = null;
+
+        this._config = buildConfig(params);
     }
 
     get publicKey(): PublicKey | null {
@@ -58,13 +66,13 @@ export class CrossmintWalletAdapter extends BaseMessageSignerWalletAdapter {
 
             this._connecting = true;
 
-            const loginWindow = new CrossmintWindow();
-            await loginWindow.init({
+            const crossmint = new CrossmintWindow(this._config);
+            await crossmint.init({
                 parentWindow: window,
-                url: 'http://localhost:3001/frame',
             });
 
-            const accounts = await loginWindow.login();
+            let accounts = undefined;
+            accounts = await crossmint.login();
 
             console.log({ accounts });
 
@@ -78,6 +86,9 @@ export class CrossmintWalletAdapter extends BaseMessageSignerWalletAdapter {
                 } catch (error: any) {
                     throw new WalletPublicKeyError(error?.message, error);
                 }
+            } else {
+                // User either closed the window, or rejected
+                throw new WalletNotConnectedError('Something went wrong...');
             }
         } catch (error: any) {
             this.emit('error', error);
@@ -102,6 +113,26 @@ export class CrossmintWalletAdapter extends BaseMessageSignerWalletAdapter {
     }
 
     async signMessage(message: Uint8Array): Promise<Uint8Array> {
-        throw new WalletSignTransactionError('Not implemented');
+        try {
+            const crossmint = new CrossmintWindow(this._config);
+            await crossmint.init({
+                parentWindow: window,
+            });
+
+            try {
+                const signedMessage = await crossmint.signMessage(message);
+
+                if (signedMessage === null) {
+                    throw new WalletSignMessageError('Something went wrong...');
+                }
+
+                return signedMessage;
+            } catch (error: any) {
+                throw new WalletSignMessageError(error?.message, error);
+            }
+        } catch (error: any) {
+            this.emit('error', error);
+            throw error;
+        }
     }
 }

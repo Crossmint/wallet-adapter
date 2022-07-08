@@ -2,6 +2,7 @@ import { WalletDisconnectButton, WalletMultiButton } from '@solana/wallet-adapte
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import { SignMessage } from '../components/SignMessage';
 import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
@@ -22,6 +23,8 @@ const Home: NextPage = () => {
                     <WalletMultiButton />
                     <WalletDisconnectButton />
                 </div>
+
+                <SignMessage />
 
                 <p className={styles.description}>
                     Get started by editing <code className={styles.code}>pages/index.tsx</code>

@@ -3,11 +3,9 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
 import { FC, useCallback } from 'react';
 import { sign } from 'tweetnacl';
-import { useNotify } from './notify';
 
 export const SignMessage: FC = () => {
     const { publicKey, signMessage } = useWallet();
-    const notify = useNotify();
 
     const onClick = useCallback(async () => {
         try {
@@ -17,17 +15,17 @@ export const SignMessage: FC = () => {
             if (!signMessage) throw new Error('Wallet does not support message signing!');
 
             // Encode anything as bytes
-            const message = new TextEncoder().encode('Crossmint test sign message\n\n' + 'Nonce: ' + Math.random());
+            const message = new TextEncoder().encode('Maxwell Test signature');
             // Sign the bytes using the wallet
             const signature = await signMessage(message);
             // Verify that the bytes were signed using the private key that matches the known public key
             if (!sign.detached.verify(message, signature, publicKey.toBytes())) throw new Error('Invalid signature!');
 
-            notify('success', `Message signature: ${bs58.encode(signature)}`);
+            console.log('success', `Message signature: ${bs58.encode(signature)}`);
         } catch (error: any) {
-            notify('error', `Signing failed: ${error?.message}`);
+            console.log('error', `Signing failed: ${error?.message}`);
         }
-    }, [publicKey, notify, signMessage]);
+    }, [publicKey, signMessage]);
 
     return signMessage ? (
         <Button variant="contained" color="secondary" onClick={onClick} disabled={!publicKey}>

@@ -1,3 +1,6 @@
+import { FALLBACK_ORIGIN_ICON } from '../consts/fallbackImage';
+import { AppMetadata } from '../types/index';
+
 /**
  * Returns whether the given image URL exists
  */
@@ -37,6 +40,7 @@ const getSiteName = (window: Window): string => {
     return window.location.hostname;
 };
 
+// There is a bug here? Sometimes the icon isnt correctly extracted
 /**
  * Extracts an icon for the site from the DOM
  */
@@ -58,20 +62,16 @@ async function getSiteIcon(window: Window): Promise<string> {
             return icon.href;
         }
 
-        return '';
+        return FALLBACK_ORIGIN_ICON;
     } catch (error) {
-        return '';
+        return FALLBACK_ORIGIN_ICON;
     }
 }
 
-/**
- * Gets site metadata and returns it
- *
- */
-const getSiteMetadata = async (): Promise<{ name: string; icon: string; url: string }> => ({
-    name: getSiteName(window),
-    icon: await getSiteIcon(window),
-    url: window.location.origin,
-});
-
-export default getSiteMetadata;
+export default async function buildSiteMetadata(appMetadata?: AppMetadata) {
+    return {
+        name: appMetadata && appMetadata.name ? appMetadata.name : getSiteName(window),
+        icon: appMetadata && appMetadata.icon ? appMetadata.icon : await getSiteIcon(window),
+        url: window.location.origin,
+    };
+}
